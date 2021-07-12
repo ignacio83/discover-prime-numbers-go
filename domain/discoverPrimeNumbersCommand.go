@@ -4,11 +4,11 @@ type DiscoverPrimeNumbersCommand struct {
 	Qty int
 }
 
-const maxNumberToTest = 1000
+const maxNumberToTest = 100000
 
 func (d *DiscoverPrimeNumbersCommand) Execute() []int {
 	var numbersToTest []int
-	for i := 1; i < maxNumberToTest; i++ {
+	for i := 1; i < maxNumberToTest; i = i + 2 {
 		numbersToTest = append(numbersToTest, i)
 	}
 	return fromNumbers(numbersToTest, d.Qty)

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"ignacio83/discover-prime-numbers-go/ui"
 	"log"
 	"os"
@@ -19,5 +20,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	command.Execute()
+	primes := command.Execute()
+	for _, v := range primes {
+		fmt.Printf("%d\n", v)
+	}
 }

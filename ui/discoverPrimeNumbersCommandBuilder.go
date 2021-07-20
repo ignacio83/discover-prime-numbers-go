@@ -17,7 +17,10 @@ type DiscoverPrimeNumbersFromUserInputFactory struct {
 }
 
 func (s *DiscoverPrimeNumbersFromUserInputFactory) Build(onDiscover domain.OnDiscover) (*domain.DiscoverPrimeNumbers, error) {
-	fmt.Fprintf(s.Writer, howManyMessage)
+	_, err := fmt.Fprintf(s.Writer, howManyMessage)
+	if err != nil {
+		return nil, err
+	}
 	scanner := bufio.NewScanner(s.Reader)
 	scanner.Scan()
 	qtyStr := scanner.Text()

@@ -9,14 +9,14 @@ import (
 	"strconv"
 )
 
-const howManyMessage = "Should discovery how many prime numbers? "
+const howManyMessage = "Should discovery prime numbers until: "
 
-type DiscoverPrimeNumbersCommandFromUserInputFactory struct {
+type DiscoverPrimeNumbersFromUserInputFactory struct {
 	Writer io.Writer
 	Reader io.Reader
 }
 
-func (s *DiscoverPrimeNumbersCommandFromUserInputFactory) Build() (*domain.DiscoverPrimeNumbersCommand, error) {
+func (s *DiscoverPrimeNumbersFromUserInputFactory) Build(onDiscover domain.OnDiscover) (*domain.DiscoverPrimeNumbers, error) {
 	fmt.Fprintf(s.Writer, howManyMessage)
 	scanner := bufio.NewScanner(s.Reader)
 	scanner.Scan()
@@ -26,9 +26,9 @@ func (s *DiscoverPrimeNumbersCommandFromUserInputFactory) Build() (*domain.Disco
 		return nil, errors.New("qty is required")
 	}
 
-	qty, err := strconv.Atoi(qtyStr)
+	qty, err := strconv.ParseUint(qtyStr, 10, 64)
 	if err != nil {
 		return nil, errors.Wrap(err, fmt.Sprintf("Qty must be a number. Value: %q", qtyStr))
 	}
-	return &domain.DiscoverPrimeNumbersCommand{Qty: qty}, nil
+	return &domain.DiscoverPrimeNumbers{Qty: qty, OnDiscover: onDiscover}, nil
 }

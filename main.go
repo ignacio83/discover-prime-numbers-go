@@ -15,13 +15,12 @@ func init() {
 }
 
 func main() {
-	inputFactory := ui.DiscoverPrimeNumbersCommandFromUserInputFactory{Writer: os.Stdout, Reader: os.Stdin}
-	command, err := inputFactory.Build()
+	inputFactory := ui.DiscoverPrimeNumbersFromUserInputFactory{Writer: os.Stdout, Reader: os.Stdin}
+	command, err := inputFactory.Build(func(primeNumber uint64) {
+		fmt.Printf("%d\n", primeNumber)
+	})
 	if err != nil {
 		log.Fatal(err)
 	}
-	primes := command.Execute()
-	for _, v := range primes {
-		fmt.Printf("%d\n", v)
-	}
+	command.Execute()
 }

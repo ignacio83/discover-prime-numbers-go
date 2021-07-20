@@ -6,20 +6,25 @@ import (
 	"testing"
 )
 
-func TestBuildDiscoverPrimeNumbersCommand(t *testing.T) {
-	t.Run("Should build command when input is valid", func(t *testing.T) {
+func TestBuildDiscoverPrimeNumbers(t *testing.T) {
+	t.Run("Should build when input is valid", func(t *testing.T) {
 		reader := bytes.Buffer{}
 		writer := bytes.Buffer{}
 
 		reader.Write([]byte("20\n"))
 
-		builder := DiscoverPrimeNumbersCommandFromUserInputFactory{Writer: &writer, Reader: &reader}
+		builder := DiscoverPrimeNumbersFromUserInputFactory{Writer: &writer, Reader: &reader}
 
-		commandGot, _ := builder.Build()
-		commandWant := &domain.DiscoverPrimeNumbersCommand{Qty: 20}
+		var callbackGot uint64
+		callback := func(primeNumber uint64) {
+			callbackGot = primeNumber
+		}
+
+		commandGot, _ := builder.Build(callback)
+		commandWant := &domain.DiscoverPrimeNumbers{Qty: 20, OnDiscover: callback}
 
 		messageGot := writer.String()
-		messageWant := "Should discovery how many prime numbers? "
+		messageWant := "Should discovery prime numbers until: "
 
 		if messageGot != messageWant {
 			t.Fatalf("got %q want %q", messageGot, messageWant)
@@ -28,6 +33,14 @@ func TestBuildDiscoverPrimeNumbersCommand(t *testing.T) {
 		if commandGot.Qty != commandWant.Qty {
 			t.Fatalf("got qty %d want %d", commandGot.Qty, commandWant.Qty)
 		}
+
+		var callbackWant uint64 = 10
+		commandGot.OnDiscover(callbackWant)
+
+		if callbackGot != 10 {
+			t.Fatalf("callback return %d want %d", callbackGot, callbackWant)
+		}
+
 	})
 
 	t.Run("Should throw error when input is blank", func(t *testing.T) {
@@ -36,12 +49,14 @@ func TestBuildDiscoverPrimeNumbersCommand(t *testing.T) {
 
 		reader.Write([]byte("\n"))
 
-		builder := DiscoverPrimeNumbersCommandFromUserInputFactory{Writer: &writer, Reader: &reader}
+		builder := DiscoverPrimeNumbersFromUserInputFactory{Writer: &writer, Reader: &reader}
 
-		_, errGot := builder.Build()
+		_, errGot := builder.Build(func(primeNumber uint64) {
+			// Nothing
+		})
 
 		messageGot := writer.String()
-		messageWant := "Should discovery how many prime numbers? "
+		messageWant := "Should discovery prime numbers until: "
 
 		if messageGot != messageWant {
 			t.Fatalf("got %q want %q", messageGot, messageWant)
@@ -55,17 +70,19 @@ func TestBuildDiscoverPrimeNumbersCommand(t *testing.T) {
 
 		reader.Write([]byte("20A\n"))
 
-		builder := DiscoverPrimeNumbersCommandFromUserInputFactory{Writer: &writer, Reader: &reader}
+		builder := DiscoverPrimeNumbersFromUserInputFactory{Writer: &writer, Reader: &reader}
 
-		_, errGot := builder.Build()
+		_, errGot := builder.Build(func(primeNumber uint64) {
+			// Nothing
+		})
 
 		messageGot := writer.String()
-		messageWant := "Should discovery how many prime numbers? "
+		messageWant := "Should discovery prime numbers until: "
 
 		if messageGot != messageWant {
 			t.Fatalf("got %q want %q", messageGot, messageWant)
 		}
-		assertError(t, errGot, "Qty must be a number. Value: \"20A\": strconv.Atoi: parsing \"20A\": invalid syntax")
+		assertError(t, errGot, "Qty must be a number. Value: \"20A\": strconv.ParseUint: parsing \"20A\": invalid syntax")
 	})
 }
 

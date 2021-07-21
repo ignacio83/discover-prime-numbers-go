@@ -26,12 +26,12 @@ func (s *DiscoverPrimeNumbersFromUserInputFactory) Build(onDiscover domain.OnDis
 	qtyStr := scanner.Text()
 
 	if len(qtyStr) == 0 {
-		return nil, errors.New("qty is required")
+		return nil, errors.New("end is required")
 	}
 
 	qty, err := strconv.ParseUint(qtyStr, 10, 64)
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("Qty must be a number. Value: %q", qtyStr))
+		return nil, errors.Wrap(err, fmt.Sprintf("End must be a number. Value: %q", qtyStr))
 	}
-	return &domain.DiscoverPrimeNumbers{Qty: qty, OnDiscover: onDiscover}, nil
+	return domain.NewDiscoverPrimeNumbers(qty, onDiscover), nil
 }

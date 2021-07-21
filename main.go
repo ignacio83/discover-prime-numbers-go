@@ -22,5 +22,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	command.Execute()
+	errExecute := command.Execute()
+	if errExecute != nil {
+		log.Fatal(errExecute)
+	}
 }

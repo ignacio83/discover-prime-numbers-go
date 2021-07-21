@@ -21,7 +21,7 @@ func TestBuildDiscoverPrimeNumbers(t *testing.T) {
 		}
 
 		commandGot, _ := builder.Build(callback)
-		commandWant := &domain.DiscoverPrimeNumbers{Qty: 20, OnDiscover: callback}
+		commandWant := domain.NewDiscoverPrimeNumbers(20, callback)
 
 		messageGot := writer.String()
 		messageWant := "Should discovery prime numbers until: "
@@ -30,12 +30,12 @@ func TestBuildDiscoverPrimeNumbers(t *testing.T) {
 			t.Fatalf("got %q want %q", messageGot, messageWant)
 		}
 
-		if commandGot.Qty != commandWant.Qty {
-			t.Fatalf("got qty %d want %d", commandGot.Qty, commandWant.Qty)
+		if commandGot.End != commandWant.End {
+			t.Fatalf("got end %d want %d", commandGot.End, commandWant.End)
 		}
 
 		var callbackWant uint64 = 10
-		commandGot.OnDiscover(callbackWant)
+		callback(callbackWant)
 
 		if callbackGot != 10 {
 			t.Fatalf("callback return %d want %d", callbackGot, callbackWant)
@@ -43,7 +43,7 @@ func TestBuildDiscoverPrimeNumbers(t *testing.T) {
 
 	})
 
-	t.Run("Should throw error when input is blank", func(t *testing.T) {
+	t.Run("Should throw error when end input is blank", func(t *testing.T) {
 		reader := bytes.Buffer{}
 		writer := bytes.Buffer{}
 
@@ -61,7 +61,7 @@ func TestBuildDiscoverPrimeNumbers(t *testing.T) {
 		if messageGot != messageWant {
 			t.Fatalf("got %q want %q", messageGot, messageWant)
 		}
-		assertError(t, errGot, "qty is required")
+		assertError(t, errGot, "end is required")
 	})
 
 	t.Run("Should throw error when input is a letter", func(t *testing.T) {
@@ -82,7 +82,7 @@ func TestBuildDiscoverPrimeNumbers(t *testing.T) {
 		if messageGot != messageWant {
 			t.Fatalf("got %q want %q", messageGot, messageWant)
 		}
-		assertError(t, errGot, "Qty must be a number. Value: \"20A\": strconv.ParseUint: parsing \"20A\": invalid syntax")
+		assertError(t, errGot, "End must be a number. Value: \"20A\": strconv.ParseUint: parsing \"20A\": invalid syntax")
 	})
 }
 

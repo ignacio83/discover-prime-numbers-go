@@ -1,11 +1,13 @@
 package domain
 
-import "gopkg.in/go-playground/validator.v9"
+import (
+	"github.com/go-playground/validator/v10"
+)
 
 type OnDiscover func(primeNumber uint64)
 
 type DiscoverPrimeNumbers struct {
-	Start      uint64 `validate:"required"`
+	Start      uint64
 	End        uint64 `validate:"required"`
 	onDiscover OnDiscover
 }
